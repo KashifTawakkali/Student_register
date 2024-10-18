@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../DocumentUplload.css';
+import '../css/DocumentUpload.css';
 
 const DocumentUpload = ({ handleFileUpload }) => {
   const [dragging, setDragging] = useState(false);
@@ -13,6 +13,7 @@ const DocumentUpload = ({ handleFileUpload }) => {
     'englishProficiency',
     'sop',
     'cv',
+    'experience', // Added Experience field
     'bachelorsDegree'
   ];
 
@@ -21,14 +22,12 @@ const DocumentUpload = ({ handleFileUpload }) => {
     setDragging(true);
   };
 
-  const handleDragLeave = () => {
-    setDragging(false);
-  };
-
   const handleDrop = (e, fieldName) => {
     e.preventDefault();
     setDragging(false);
     const files = e.dataTransfer.files;
+
+    console.log(files); // Log the files dropped
     if (files.length > 0) {
       handleFileUpload(files[0], fieldName, setFileUploadProgress);
       checkAllFilesUploaded();
@@ -36,30 +35,21 @@ const DocumentUpload = ({ handleFileUpload }) => {
   };
 
   const handleChange = (e, fieldName) => {
-    handleFileUpload(e.target.files[0], fieldName, setFileUploadProgress);
-    checkAllFilesUploaded();
+    console.log(e.target.files); // Check the files array
+    if (e.target.files.length > 0) {
+      handleFileUpload(e.target.files[0], fieldName, setFileUploadProgress);
+      checkAllFilesUploaded();
+    }
   };
 
   const checkAllFilesUploaded = () => {
     const uploadedFields = requiredFields.filter(field => fileUploadProgress[field] !== undefined);
-    if (uploadedFields.length === requiredFields.length) {
-      setAllFilesUploaded(true);
-    } else {
-      setAllFilesUploaded(false);
-    }
+    setAllFilesUploaded(uploadedFields.length === requiredFields.length);
   };
 
   return (
     <section className="form-section">
       <h2>Document Upload</h2>
-      <div
-        className={`drop-area ${dragging ? 'dragging' : ''}`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={(e) => handleDrop(e, '10thMarksheet')}
-      >
-        <p>Drag and drop your files here or click to upload</p>
-      </div>
       {requiredFields.map((field) => (
         <div className="form-group" key={field}>
           <label>{field.replace(/([A-Z])/g, ' $1').toUpperCase()} *</label>
@@ -67,6 +57,8 @@ const DocumentUpload = ({ handleFileUpload }) => {
             type="file"
             accept=".pdf,.doc,.docx"
             onChange={(e) => handleChange(e, field)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, field)}
             required
           />
           {fileUploadProgress[field] && (

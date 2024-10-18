@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 import { motion } from 'framer-motion';
 import { Tooltip } from 'react-tooltip';
+import '../css/BackgroundInformation.css'; 
 
 const BackgroundInformation = () => {
   const [visaRejectionStatus, setVisaRejectionStatus] = useState(null);
@@ -23,6 +24,7 @@ const BackgroundInformation = () => {
         <div className="radio-group">
           <motion.label 
             whileHover={{ scale: 1.1 }} 
+            whileTap={{ scale: 0.9 }} // Added bounce effect
             className="radio-option"
           >
             <input 
@@ -35,6 +37,7 @@ const BackgroundInformation = () => {
           </motion.label>
           <motion.label 
             whileHover={{ scale: 1.1 }} 
+            whileTap={{ scale: 0.9 }} // Added bounce effect
             className="radio-option"
           >
             <input 
@@ -50,9 +53,14 @@ const BackgroundInformation = () => {
           data-tip="Indicate if you have faced any visa rejections." 
           className="tooltip-trigger"
         >
-          ?
+          
         </span>
-        <Tooltip place="top" type="dark" effect="float" />
+        <Tooltip 
+          place="top" 
+          type="dark" 
+          effect="float" 
+          style={{ transition: 'opacity 0.3s ease-in-out' }}
+        />
       </div>
 
       <div className="form-group">
@@ -61,14 +69,26 @@ const BackgroundInformation = () => {
           options={gapOptions} 
           placeholder="Select gap in education" 
           onChange={(option) => setGapInEducation(option.value)} 
+          styles={{
+            control: (base) => ({
+              ...base,
+              transition: 'all 0.3s ease', 
+              marginTop: '0.5rem',
+            }),
+          }}
         />
         <span 
           data-tip="Select the duration of any gaps in your education." 
           className="tooltip-trigger"
         >
-          ?
+          
         </span>
-        <Tooltip place="top" type="dark" effect="float" />
+        <Tooltip 
+          place="top" 
+          type="dark" 
+          effect="float" 
+          style={{ transition: 'opacity 0.3s ease-in-out' }} 
+        />
       </div>
     </section>
   );
