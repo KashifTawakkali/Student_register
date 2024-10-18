@@ -1,0 +1,70 @@
+/* styles.css */
+.form-section {
+    padding: 20px;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 15px; 
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    margin-bottom: 5px; 
+  }
+  
+  input,
+  .Select__control {
+    padding: 8px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+  }
+  
+  input:focus,
+  .Select__control:focus {
+    border-color: #007bff; 
+    outline: none; 
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: repeat(2, 1fr); 
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .form-grid {
+      grid-template-columns: 1fr; 
+    }
+  }
+  .error {
+    color: red;
+    font-size: 0.9em;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  

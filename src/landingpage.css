@@ -1,0 +1,222 @@
+/* General Body Styling */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to bottom, #4F9DF9, #B1D2FF);
+    min-height: 100vh;
+}
+
+/* Header Styling */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px; /* Increased horizontal padding */
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Image Styling */
+.logo-image {
+    height: 34px;
+    width: auto;
+    vertical-align: middle;
+    margin-right: 20px; /* Add space after the logo */
+}
+
+/* Navigation Styling */
+header nav {
+    display: flex; /* Use flexbox for navigation items */
+    gap: 20px; /* Space between navigation links */
+}
+
+header nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    margin: 0 10px; /* Space between navigation links */
+}
+
+header nav a:hover {
+    color: #4F9DF9;
+}
+
+/* Button Styling */
+header button {
+    background: linear-gradient(to right, #8a3cff, #4f9df9);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    margin-left: 20px; /* Space before the register button */
+}
+
+header button:hover {
+    opacity: 0.9;
+}
+
+/* Burger Menu Styling */
+.burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.burger div {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 4px;
+    transition: 0.3s;
+}
+
+/* Main Section Styling */
+main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 10%;
+    color: white;
+}
+
+/* Text Section Styling */
+.text-section {
+    max-width: 45%;
+    padding: 40px;
+}
+
+.text-section h1 {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.text-section p {
+    margin: 20px 0;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+/* Button Styling */
+button {
+    background: linear-gradient(to right, #8a3cff, #4f9df9);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(to right, #7a35e2, #438ee6);
+}
+
+/* Illustration Section */
+.illustration-section {
+    padding: 40px;
+}
+
+.illustration-section img {
+    width: 100%;
+    height: auto;
+    max-width: 500px;
+}
+
+/* Animation for Title */
+@keyframes fadeInTitle {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation for Text */
+@keyframes fadeInText {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Title Animation */
+.animate-title {
+    animation: fadeInTitle 1.5s ease-in-out forwards;
+}
+
+/* Text Animation */
+.animate-text {
+    animation: fadeInText 1.8s ease-in-out forwards;
+}
+
+/* Button Glow Effect */
+.glow-on-hover {
+    transition: box-shadow 0.3s ease;
+}
+
+.glow-on-hover:hover {
+    box-shadow: 0 0 15px 5px rgba(72, 191, 227, 0.75);
+}
+
+/* Mandatory Field Glow Effect */
+input:focus {
+    outline: none;
+    box-shadow: 0 0 10px 2px rgba(72, 191, 227, 0.75);
+}
+
+/* Media Queries for Mobile and Tablet */
+@media (max-width: 768px) {
+    header {
+        justify-content: space-between;
+    }
+
+    header nav {
+        display: none; /* Hide the nav initially */
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        flex-direction: column;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    header nav.active {
+        display: flex; /* Show nav when active */
+    }
+
+    .burger {
+        display: flex; /* Show burger menu */
+    }
+
+    main {
+        flex-direction: column; /* Stack items vertically */
+        padding: 20px;
+    }
+
+    main .text-section,
+    main .illustration-section {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    main h1 {
+        font-size: 36px; /* Adjust font size for smaller screens */
+    }
+
+    main p {
+        font-size: 16px; /* Adjust font size for smaller screens */
+    }
+}
