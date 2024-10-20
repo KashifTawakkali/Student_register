@@ -1,12 +1,16 @@
+// src/widgets/StudentRegistration.js
 import React, { useState } from 'react';
 import './studentregister.css';
 import PersonalInformation from './widgets/PersonalInformation';
 import AddressInformation from './widgets/AddressInformation';
 import AcademicInterests from './widgets/AcademicInterests';
 import DocumentUpload from './widgets/DocumentUpload';
-import BackgroundInformation from './widgets/BackgroundInformation'; 
-import EducationalBackground from './widgets/EducationaInfo'; 
+import BackgroundInformation from './widgets/BackgroundInformation';
+import EducationalBackground from './widgets/EducationaInfo';
 import Preview from './widgets/Preview';
+import Loader from './widgets/loader';
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import Toast styles
 
 const StudentRegistration = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +23,7 @@ const StudentRegistration = () => {
     email: '',
     maritalStatus: '',
     gender: '',
-    dateOfBirth: null, 
+    dateOfBirth: null,
     nativeCountry: '',
     nativeState: '',
     nativeCity: '',
@@ -31,8 +35,6 @@ const StudentRegistration = () => {
     educationalBackground: [],
   });
 
-  const [dob, setDob] = useState(null);
-  const [passportExpiry, setPassportExpiry] = useState(null);
   const [showTestScore, setShowTestScore] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [documents, setDocuments] = useState({
@@ -43,9 +45,10 @@ const StudentRegistration = () => {
 
   // Step state
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 7; // Updated to include the preview step
+  const totalSteps = 7;
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); // Loader state
 
   const handleTestChange = (selectedOption) => {
     setShowTestScore(selectedOption.value !== 'none');
@@ -56,28 +59,26 @@ const StudentRegistration = () => {
       console.error('No file provided');
       return;
     }
-  
+
     const formData = new FormData();
     formData.append(fieldName, file);
-  
-    // Simulating a file upload process
+
     const uploadProgress = setInterval(() => {
       setFileUploadProgress((prev) => {
-        const currentProgress = (prev[fieldName] || 0) + 20; // Simulating upload progress
+        const currentProgress = (prev[fieldName] || 0) + 20;
         if (currentProgress >= 100) {
           clearInterval(uploadProgress);
           return { ...prev, [fieldName]: 100 }; // Set progress to 100%
         }
         return { ...prev, [fieldName]: currentProgress };
       });
-    }, 1000); // Update progress every second
+    }, 1000);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
       setFormSubmitted(true);
-      // Handle successful submission (e.g., send to API)
     }
   };
 
@@ -105,15 +106,14 @@ const StudentRegistration = () => {
         // Validate Educational Background
         break;
       case 5:
-        // Validate Background Information
+        // Validate Document Upload
         break;
       case 6:
-        // Validate Document Upload
+        // Validate Background Information
         break;
       default:
         break;
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -131,50 +131,85 @@ const StudentRegistration = () => {
         </div>
         <div className="progress-labels">
           <span className={currentStep >= 1 ? 'completed' : ''}>Step 1: Personal Info</span>
-          <span className={currentStep >= 2 ? 'completed' : ''}>Step 2: Address</span>
+          <span className={currentStep >= 2 ? 'completed' : ''}>Step 2: Address Info</span>
           <span className={currentStep >= 3 ? 'completed' : ''}>Step 3: Academic Interests</span>
           <span className={currentStep >= 4 ? 'completed' : ''}>Step 4: Educational Background</span>
-          <span className={currentStep >= 5 ? 'completed' : ''}>Step 5: Background Info</span>
-          <span className={currentStep >= 6 ? 'completed' : ''}>Step 6: Documents</span>
-          <span className={currentStep >= 7 ? 'completed' : ''}>Step 7: Preview</span> {/* New preview step */}
+          <span className={currentStep >= 5 ? 'completed' : ''}>Step 5: Document Upload</span>
+          <span className={currentStep >= 6 ? 'completed' : ''}>Step 6: Background Info</span>
+          <span className={currentStep >= 7 ? 'completed' : ''}>Step 7: Preview</span>
         </div>
       </div>
 
+      {loading && <Loader />}
+
       {currentStep === 1 && (
-        <PersonalInformation dob={dob} setDob={setDob} formData={formData} setFormData={setFormData} errors={errors} />
+        <PersonalInformation
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          setLoading={setLoading}
+        />
       )}
       {currentStep === 2 && (
-        <AddressInformation passportExpiry={passportExpiry} setPassportExpiry={setPassportExpiry} formData={formData} setFormData={setFormData} errors={errors} />
+        <AddressInformation
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          setLoading={setLoading} // Pass setLoading to AddressInformation
+        />
       )}
       {currentStep === 3 && (
-        <AcademicInterests showTestScore={showTestScore} handleTestChange={handleTestChange} formData={formData} setFormData={setFormData} errors={errors} />
+        <AcademicInterests
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          showTestScore={showTestScore}
+          handleTestChange={handleTestChange}
+        />
       )}
       {currentStep === 4 && (
-        <EducationalBackground formData={formData} setFormData={setFormData} errors={errors} /> 
+        <EducationalBackground
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+        />
       )}
       {currentStep === 5 && (
-        <BackgroundInformation formData={formData} setFormData={setFormData} errors={errors} /> 
+        <BackgroundInformation
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+        />
       )}
       {currentStep === 6 && (
-        <DocumentUpload handleFileUpload={handleFileUpload} documents={documents} setDocuments={setDocuments} errors={errors} />
+        <DocumentUpload
+          handleFileUpload={handleFileUpload}
+          documents={documents}
+          setDocuments={setDocuments}
+          errors={errors}
+        />
       )}
       {currentStep === 7 && (
         <Preview formData={formData} uploadedDocuments={Object.values(documents)} />
       )}
 
-      {/* Navigation buttons */}
-      {currentStep < totalSteps && (
-        <button type="button" onClick={nextStep}>Next</button>
-      )}
+      <div className="navigation-buttons">
 
-      {currentStep === totalSteps && (
-        <button type="submit">Submit</button>
-      )}
+        {currentStep < totalSteps ? (
+          <button type="button" onClick={nextStep}>
+            Next
+          </button>
+        ) : (
+          <button type="submit">Submit</button>
+        )}
+      </div>
 
-      {/* Confirmation message */}
-      {formSubmitted && (
-        <div className="confirmation-message">Your registration has been submitted successfully!</div>
-      )}
+      {formSubmitted && <div className="confirmation-message">Your registration has been submitted successfully!</div>}
     </form>
   );
 };
