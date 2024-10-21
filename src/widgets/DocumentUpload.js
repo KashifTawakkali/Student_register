@@ -1,65 +1,97 @@
-import React, { useState } from 'react';
-import '../DocumentUplload.css';
+import React, { useState, useEffect } from 'react';
+import { submitDocument } from '../API/contorller/documentUploadController'; 
+import '../css/DocumentUpload.css';
+import { toast } from 'react-toastify';
 
-const DocumentUpload = ({ handleFileUpload }) => {
+const DocumentUpload = () => {
   const [dragging, setDragging] = useState(false);
   const [fileUploadProgress, setFileUploadProgress] = useState({});
+  const [files, setFiles] = useState({
+    tenthMarksheet: null,
+    twelfthMarksheet: null,
+    passport: null,
+    englishProficiencyCertificate: null,
+    sop: null,
+    cv: null,
+    experience: null,
+    bachelorsDegree: null
+  });
   const [allFilesUploaded, setAllFilesUploaded] = useState(false);
 
   const requiredFields = [
-    '10thMarksheet',
-    '12thMarksheet',
+    'tenthMarksheet',
+    'twelfthMarksheet',
     'passport',
-    'englishProficiency',
+    'englishProficiencyCertificate',
     'sop',
     'cv',
+    'experience',
     'bachelorsDegree'
   ];
+
+  // This effect checks whether all files have been uploaded
+  useEffect(() => {
+    const uploadedFields = requiredFields.filter(field => files[field] !== null);
+    setAllFilesUploaded(uploadedFields.length === requiredFields.length);
+    console.log("All files uploaded: ", uploadedFields.length === requiredFields.length);
+  }, [files]); // This will run every time the 'files' state changes
 
   const handleDragOver = (e) => {
     e.preventDefault();
     setDragging(true);
   };
 
-  const handleDragLeave = () => {
-    setDragging(false);
-  };
-
   const handleDrop = (e, fieldName) => {
     e.preventDefault();
     setDragging(false);
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleFileUpload(files[0], fieldName, setFileUploadProgress);
-      checkAllFilesUploaded();
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles.length > 0) {
+      handleFileUpload(droppedFiles[0], fieldName);
     }
   };
 
   const handleChange = (e, fieldName) => {
-    handleFileUpload(e.target.files[0], fieldName, setFileUploadProgress);
-    checkAllFilesUploaded();
+    const selectedFiles = e.target.files;
+    if (selectedFiles.length > 0) {
+      handleFileUpload(selectedFiles[0], fieldName);
+    }
   };
 
-  const checkAllFilesUploaded = () => {
-    const uploadedFields = requiredFields.filter(field => fileUploadProgress[field] !== undefined);
-    if (uploadedFields.length === requiredFields.length) {
-      setAllFilesUploaded(true);
-    } else {
-      setAllFilesUploaded(false);
+  const handleFileUpload = (file, fieldName) => {
+    console.log(`Uploading file for field: ${fieldName}`, file); // Debugging: Log file upload
+    setFiles((prevFiles) => ({ ...prevFiles, [fieldName]: file }));
+    setFileUploadProgress((prevProgress) => ({
+      ...prevProgress,
+      [fieldName]: 100 // Assuming the file is uploaded instantly for simplicity
+    }));
+  };
+
+  const handleSubmit = async () => {
+    console.log("Submit button clicked"); // Debugging: Log when submit button is clicked
+
+    const formData = new FormData();
+
+    // Append all files to FormData object with correct field names
+    Object.keys(files).forEach((field) => {
+      if (files[field]) {
+        console.log(`Appending file for field: ${field}`); // Debugging: Log each appended file
+        formData.append(field, files[field]);
+      }
+    });
+
+    try {
+      const response = await submitDocument(formData); // Call the API controller
+      console.log("Upload successful:", response); // Debugging: Log the response on success
+      toast("Form submitted successfully!");
+    } catch (error) {
+      console.error("Error uploading files:", error); // Debugging: Log the error on failure
+      toast("Error uploading files, please try again.");
     }
   };
 
   return (
     <section className="form-section">
       <h2>Document Upload</h2>
-      <div
-        className={`drop-area ${dragging ? 'dragging' : ''}`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={(e) => handleDrop(e, '10thMarksheet')}
-      >
-        <p>Drag and drop your files here or click to upload</p>
-      </div>
       {requiredFields.map((field) => (
         <div className="form-group" key={field}>
           <label>{field.replace(/([A-Z])/g, ' $1').toUpperCase()} *</label>
@@ -67,6 +99,8 @@ const DocumentUpload = ({ handleFileUpload }) => {
             type="file"
             accept=".pdf,.doc,.docx"
             onChange={(e) => handleChange(e, field)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, field)}
             required
           />
           {fileUploadProgress[field] && (
@@ -77,7 +111,7 @@ const DocumentUpload = ({ handleFileUpload }) => {
       <button
         className={`submit-button ${allFilesUploaded ? 'active' : 'disabled'}`}
         disabled={!allFilesUploaded}
-        onClick={() => alert("Form submitted successfully!")}
+        onClick={handleSubmit} // Submit the form when the button is clicked
       >
         Submit
       </button>

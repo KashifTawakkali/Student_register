@@ -1,0 +1,48 @@
+.form-section {
+  margin: 20px;
+}
+
+.drop-area {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.drop-area.dragging {
+  background-color: #f0f0f0; /* Change color on drag over */
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+input[type="file"] {
+  display: block; /* Block display for better layout */
+  margin-top: 10px; /* Space above the input */
+}
+
+progress {
+  display: block; /* Block display for better layout */
+  margin-top: 10px; /* Space above the progress bar */
+  width: 100%; /* Full width */
+}
+
+.submit-button {
+  padding: 10px 20px;
+  background-color: #007bff; /* Example color */
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button.disabled {
+  background-color: #ccc; /* Disable color */
+  cursor: not-allowed; /* Change cursor to not-allowed */
+}
+
+.submit-button.active:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}

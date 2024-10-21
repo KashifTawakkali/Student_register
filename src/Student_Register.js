@@ -1,3 +1,4 @@
+// src/widgets/StudentRegistration.js
 import React, { useState } from 'react';
 import './studentregister.css';
 import PersonalInformation from './widgets/PersonalInformation';
@@ -5,28 +6,14 @@ import AddressInformation from './widgets/AddressInformation';
 import AcademicInterests from './widgets/AcademicInterests';
 import DocumentUpload from './widgets/DocumentUpload';
 import BackgroundInformation from './widgets/BackgroundInformation';
+import EducationalBackground from './widgets/EducationaInfo';
 import Preview from './widgets/Preview';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import Loader from './widgets/loader';
+import { ToastContainer } from 'react-toastify'; // Import ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Import Toast styles
 
 const StudentRegistration = () => {
-  const [dob, setDob] = useState(null);
-  const [passportExpiry, setPassportExpiry] = useState(null);
-  const [showTestScore, setShowTestScore] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [documents, setDocuments] = useState({
-    '10thMarksheet': null,
-    '12thMarksheet': null,
-    'passport': null,
-  });
-
-  const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 6; // Incremented to account for Preview step
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
-
-  const [personalInfo, setPersonalInfo] = useState({
+  const [formData, setFormData] = useState({
     title: '',
     firstName: '',
     middleName: '',
@@ -36,50 +23,99 @@ const StudentRegistration = () => {
     email: '',
     maritalStatus: '',
     gender: '',
-  });
-
-  const [addressInfo, setAddressInfo] = useState({
-    country: '',
-    state: '',
-    city: '',
+    dateOfBirth: null,
+    nativeCountry: '',
+    nativeState: '',
+    nativeCity: '',
     postalCode: '',
     passportNo: '',
+    passportExpiry: null,
+    visaRejectionStatus: false,
+    gapInEducation: '',
+    educationalBackground: [],
   });
+
+  const [showTestScore, setShowTestScore] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [documents, setDocuments] = useState({
+    '10thMarksheet': null,
+    '12thMarksheet': null,
+    'passport': null,
+  });
+
+  // Step state
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 7;
+
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false); // Loader state
 
   const handleTestChange = (selectedOption) => {
     setShowTestScore(selectedOption.value !== 'none');
   };
 
-  const handleFileUpload = (e, field) => {
-    setDocuments({ ...documents, [field]: e.target.files[0] });
+  const handleFileUpload = (file, fieldName, setFileUploadProgress) => {
+    if (!file) {
+      console.error('No file provided');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append(fieldName, file);
+
+    const uploadProgress = setInterval(() => {
+      setFileUploadProgress((prev) => {
+        const currentProgress = (prev[fieldName] || 0) + 20;
+        if (currentProgress >= 100) {
+          clearInterval(uploadProgress);
+          return { ...prev, [fieldName]: 100 }; // Set progress to 100%
+        }
+        return { ...prev, [fieldName]: currentProgress };
+      });
+    }, 1000);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setFormSubmitted(true);
+    if (validateForm()) {
+      setFormSubmitted(true);
+    }
   };
 
   const nextStep = () => {
-    // If we are on the personal information step (Step 1)
-    if (currentStep === 1) {
-      // Check if all required personal info is filled
-      const { firstName, lastName, mobile, email, gender } = personalInfo;
-      if (!firstName || !lastName || !mobile || !email || !gender || !dob) {
-        setPopupMessage('Please fill out the Personal Information before proceeding.');
-        setIsModalOpen(true);
-        return;
+    if (validateForm()) {
+      if (currentStep < totalSteps) {
+        setCurrentStep(currentStep + 1);
       }
-      // Save personal information to local storage
-      localStorage.setItem('personalInfo', JSON.stringify(personalInfo));
-    }
-
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
     }
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const validateForm = () => {
+    let newErrors = {};
+    switch (currentStep) {
+      case 1:
+        // Validate Personal Information
+        break;
+      case 2:
+        // Validate Address Information
+        break;
+      case 3:
+        // Validate Academic Interests
+        break;
+      case 4:
+        // Validate Educational Background
+        break;
+      case 5:
+        // Validate Document Upload
+        break;
+      case 6:
+        // Validate Background Information
+        break;
+      default:
+        break;
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -95,59 +131,85 @@ const StudentRegistration = () => {
         </div>
         <div className="progress-labels">
           <span className={currentStep >= 1 ? 'completed' : ''}>Step 1: Personal Info</span>
-          <span className={currentStep >= 2 ? 'completed' : ''}>Step 2: Address</span>
+          <span className={currentStep >= 2 ? 'completed' : ''}>Step 2: Address Info</span>
           <span className={currentStep >= 3 ? 'completed' : ''}>Step 3: Academic Interests</span>
-          <span className={currentStep >= 4 ? 'completed' : ''}>Step 4: Background Info</span>
-          <span className={currentStep >= 5 ? 'completed' : ''}>Step 5: Documents</span>
-          <span className={currentStep >= 6 ? 'completed' : ''}>Step 6: Preview</span>
+          <span className={currentStep >= 4 ? 'completed' : ''}>Step 4: Educational Background</span>
+          <span className={currentStep >= 5 ? 'completed' : ''}>Step 5: Document Upload</span>
+          <span className={currentStep >= 6 ? 'completed' : ''}>Step 6: Background Info</span>
+          <span className={currentStep >= 7 ? 'completed' : ''}>Step 7: Preview</span>
         </div>
       </div>
 
-      {/* Form sections */}
+      {loading && <Loader />}
+
       {currentStep === 1 && (
-        <PersonalInformation dob={dob} setDob={setDob} personalInfo={personalInfo} setPersonalInfo={setPersonalInfo} />
-      )}
-      {currentStep === 2 && (
-        <AddressInformation passportExpiry={passportExpiry} setPassportExpiry={setPassportExpiry} />
-      )}
-      {currentStep === 3 && (
-        <AcademicInterests showTestScore={showTestScore} handleTestChange={handleTestChange} />
-      )}
-      {currentStep === 4 && (
-        <DocumentUpload handleFileUpload={handleFileUpload} />
-      )}
-      {currentStep === 5 && (
-        <Preview 
-          personalInfo={personalInfo}
-          addressInfo={addressInfo}
-          academicInterests={[]} // Replace with actual data
-          documents={documents}
+        <PersonalInformation
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          setLoading={setLoading}
         />
       )}
-
-      {/* Navigation buttons */}
-      {currentStep < totalSteps && (
-        <button type="button" onClick={nextStep}>Next</button>
+      {currentStep === 2 && (
+        <AddressInformation
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          setLoading={setLoading} // Pass setLoading to AddressInformation
+        />
+      )}
+      {currentStep === 3 && (
+        <AcademicInterests
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+          showTestScore={showTestScore}
+          handleTestChange={handleTestChange}
+        />
+      )}
+      {currentStep === 4 && (
+        <EducationalBackground
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+        />
+      )}
+      {currentStep === 5 && (
+        <BackgroundInformation
+          formData={formData}
+          setFormData={setFormData}
+          errors={errors}
+          setErrors={setErrors}
+        />
+      )}
+      {currentStep === 6 && (
+        <DocumentUpload
+          handleFileUpload={handleFileUpload}
+          documents={documents}
+          setDocuments={setDocuments}
+          errors={errors}
+        />
+      )}
+      {currentStep === 7 && (
+        <Preview formData={formData} uploadedDocuments={Object.values(documents)} />
       )}
 
-      {currentStep === totalSteps && (
-        <button type="submit">Submit</button>
-      )}
+      <div className="navigation-buttons">
 
-      {/* Confirmation message */}
-      {formSubmitted && (
-        <div className="confirmation-message">Your registration has been submitted successfully!</div>
-      )}
+        {currentStep < totalSteps ? (
+          <button type="button" onClick={nextStep}>
+            Next
+          </button>
+        ) : (
+          <button type="submit">Submit</button>
+        )}
+      </div>
 
-      {/* Modal popup for alerts */}
-      {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h4>{popupMessage}</h4>
-            <button onClick={closeModal}>Close</button>
-          </div>
-        </div>
-      )}
+      {formSubmitted && <div className="confirmation-message">You have complete all Registeration step successfully!.Press Next to submit </div>}
     </form>
   );
 };

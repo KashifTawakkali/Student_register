@@ -1,0 +1,28 @@
+.form-section {
+    margin: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .radio-group {
+    display: flex;
+    align-items: center; /* Align items vertically */
+  }
+  
+  .radio-option {
+    margin-right: 15px; /* Add space between radio buttons */
+    display: flex;
+    align-items: center; /* Align the label and input */
+  }
+  
+  .radio-option input {
+    margin-right: 5px; /* Space between radio input and label text */
+  }
+  
+  .tooltip-trigger {
+    margin-left: 8px; /* Space between question mark and label */
+    cursor: pointer; /* Show pointer cursor for better UX */
+  }
+  
