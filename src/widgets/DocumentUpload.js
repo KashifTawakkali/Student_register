@@ -1,19 +1,30 @@
 import React, { useState } from 'react';
+import { submitDocument } from '../API/contorller/documentUploadController'; 
 import '../css/DocumentUpload.css';
 
-const DocumentUpload = ({ handleFileUpload }) => {
+const DocumentUpload = () => {
   const [dragging, setDragging] = useState(false);
   const [fileUploadProgress, setFileUploadProgress] = useState({});
+  const [files, setFiles] = useState({
+    tenthMarksheet: null,
+    twelfthMarksheet: null,
+    passport: null,
+    englishProficiencyCertificate: null,
+    sop: null,
+    cv: null,
+    experience: null,
+    bachelorsDegree: null
+  });
   const [allFilesUploaded, setAllFilesUploaded] = useState(false);
 
   const requiredFields = [
-    '10thMarksheet',
-    '12thMarksheet',
+    'tenthMarksheet',
+    'twelfthMarksheet',
     'passport',
-    'englishProficiency',
+    'englishProficiencyCertificate',
     'sop',
     'cv',
-    'experience', // Added Experience field
+    'experience',
     'bachelorsDegree'
   ];
 
@@ -25,26 +36,56 @@ const DocumentUpload = ({ handleFileUpload }) => {
   const handleDrop = (e, fieldName) => {
     e.preventDefault();
     setDragging(false);
-    const files = e.dataTransfer.files;
-
-    console.log(files); // Log the files dropped
-    if (files.length > 0) {
-      handleFileUpload(files[0], fieldName, setFileUploadProgress);
-      checkAllFilesUploaded();
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles.length > 0) {
+      handleFileUpload(droppedFiles[0], fieldName);
     }
   };
 
   const handleChange = (e, fieldName) => {
-    console.log(e.target.files); // Check the files array
-    if (e.target.files.length > 0) {
-      handleFileUpload(e.target.files[0], fieldName, setFileUploadProgress);
-      checkAllFilesUploaded();
+    const selectedFiles = e.target.files;
+    if (selectedFiles.length > 0) {
+      handleFileUpload(selectedFiles[0], fieldName);
     }
   };
 
+  const handleFileUpload = (file, fieldName) => {
+    console.log(`Uploading file for field: ${fieldName}`, file); // Debugging: Log file upload
+    setFiles((prevFiles) => ({ ...prevFiles, [fieldName]: file }));
+    setFileUploadProgress((prevProgress) => ({
+      ...prevProgress,
+      [fieldName]: 100 // Assuming the file is uploaded instantly for simplicity
+    }));
+    checkAllFilesUploaded();
+  };
+
   const checkAllFilesUploaded = () => {
-    const uploadedFields = requiredFields.filter(field => fileUploadProgress[field] !== undefined);
+    const uploadedFields = requiredFields.filter(field => files[field] !== null);
     setAllFilesUploaded(uploadedFields.length === requiredFields.length);
+    console.log("All files uploaded: ", uploadedFields.length === requiredFields.length); // Debugging: Check if all files are uploaded
+  };
+
+  const handleSubmit = async () => {
+    console.log("Submit button clicked"); // Debugging: Log when submit button is clicked
+
+    const formData = new FormData();
+
+    // Append all files to FormData object with correct field names
+    Object.keys(files).forEach((field) => {
+      if (files[field]) {
+        console.log(`Appending file for field: ${field}`); // Debugging: Log each appended file
+        formData.append(field, files[field]);
+      }
+    });
+
+    try {
+      const response = await submitDocument(formData); // Call the API controller
+      console.log("Upload successful:", response); // Debugging: Log the response on success
+      alert("Form submitted successfully!");
+    } catch (error) {
+      console.error("Error uploading files:", error); // Debugging: Log the error on failure
+      alert("Error uploading files, please try again.");
+    }
   };
 
   return (
@@ -69,7 +110,7 @@ const DocumentUpload = ({ handleFileUpload }) => {
       <button
         className={`submit-button ${allFilesUploaded ? 'active' : 'disabled'}`}
         disabled={!allFilesUploaded}
-        onClick={() => alert("Form submitted successfully!")}
+        onClick={handleSubmit} // Submit the form when the button is clicked
       >
         Submit
       </button>
