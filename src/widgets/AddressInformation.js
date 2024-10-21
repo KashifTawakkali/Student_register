@@ -109,6 +109,15 @@ const AddressInformation = ({ setLoading, setFormData }) => {
         <form className="form-section" onSubmit={handleSubmit}>
             <h2>Address & Passport Information</h2>
             <div className="form-group">
+                <label>Email</label>
+                <input
+                    type="text"
+                    placeholder="enter your email"
+                    value={passportNo}
+                    onChange={(e) => setPassportNo(e.target.value)}
+                />
+            </div>
+            <div className="form-group">
                 <label>Native Country *</label>
                 <Select
                     options={countries}
@@ -158,6 +167,7 @@ const AddressInformation = ({ setLoading, setFormData }) => {
                     onChange={(e) => setPassportNo(e.target.value)}
                 />
             </div>
+           
             <div className="form-group">
                 <label>Passport Expiry *</label>
                 <DatePicker

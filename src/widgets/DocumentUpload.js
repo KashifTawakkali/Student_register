@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { submitDocument } from '../API/contorller/documentUploadController'; 
 import '../css/DocumentUpload.css';
+import { toast } from 'react-toastify';
 
 const DocumentUpload = () => {
   const [dragging, setDragging] = useState(false);
@@ -27,6 +28,13 @@ const DocumentUpload = () => {
     'experience',
     'bachelorsDegree'
   ];
+
+  // This effect checks whether all files have been uploaded
+  useEffect(() => {
+    const uploadedFields = requiredFields.filter(field => files[field] !== null);
+    setAllFilesUploaded(uploadedFields.length === requiredFields.length);
+    console.log("All files uploaded: ", uploadedFields.length === requiredFields.length);
+  }, [files]); // This will run every time the 'files' state changes
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -56,13 +64,6 @@ const DocumentUpload = () => {
       ...prevProgress,
       [fieldName]: 100 // Assuming the file is uploaded instantly for simplicity
     }));
-    checkAllFilesUploaded();
-  };
-
-  const checkAllFilesUploaded = () => {
-    const uploadedFields = requiredFields.filter(field => files[field] !== null);
-    setAllFilesUploaded(uploadedFields.length === requiredFields.length);
-    console.log("All files uploaded: ", uploadedFields.length === requiredFields.length); // Debugging: Check if all files are uploaded
   };
 
   const handleSubmit = async () => {
@@ -81,10 +82,10 @@ const DocumentUpload = () => {
     try {
       const response = await submitDocument(formData); // Call the API controller
       console.log("Upload successful:", response); // Debugging: Log the response on success
-      alert("Form submitted successfully!");
+      toast("Form submitted successfully!");
     } catch (error) {
       console.error("Error uploading files:", error); // Debugging: Log the error on failure
-      alert("Error uploading files, please try again.");
+      toast("Error uploading files, please try again.");
     }
   };
 

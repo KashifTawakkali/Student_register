@@ -209,7 +209,7 @@ const StudentRegistration = () => {
         )}
       </div>
 
-      {formSubmitted && <div className="confirmation-message">Your registration has been submitted successfully!</div>}
+      {formSubmitted && <div className="confirmation-message">You have complete all Registeration step successfully!.Press Next to submit </div>}
     </form>
   );
 };

@@ -1,72 +1,94 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { getPreview } from '../API/contorller/preview'; // Import the controller
+import '../css/DataPreview.css'; // Optional: Include your CSS for styling
 
-const Preview = ({ formData, uploadedDocuments }) => {
+const DataPreview = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Get the email from local storage
+        const email = localStorage.getItem('studentEmailId');
+        // Fetch data using the controller
+        const responseData = await getPreview(email);
+        setData(responseData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error fetching data: {error}</p>;
+
   return (
-    <section className="preview-section">
-      <h2>Preview Your Information</h2>
+    <div>
+      <h2>Combined Data Preview</h2>
+      {data && (
+        <div>
+          <h3>Personal Data</h3>
+          {data.personalData.map((item) => (
+            <div key={item._id}>
+              <p>Title: {item.title}</p>
+              <p>First Name: {item.firstName}</p>
+              <p>Middle Name: {item.middleName}</p>
+              <p>Last Name: {item.lastName}</p>
+              <p>Mobile No: {item.mobileNo}</p>
+              <p>Emergency Contact No: {item.emergencyContactNo}</p>
+              <p>Student Email ID: {item.studentEmailId}</p>
+              <p>Marital Status: {item.maritalStatus}</p>
+              <p>Gender: {item.gender}</p>
+              <p>Date of Birth: {new Date(item.dateOfBirth).toLocaleDateString()}</p>
+            </div>
+          ))}
 
-      <div className="preview-group">
-        <h3>Personal Information</h3>
-        <p><strong>Title:</strong> {formData.title}</p>
-        <p><strong>First Name:</strong> {formData.firstName}</p>
-        <p><strong>Middle Name:</strong> {formData.middleName}</p>
-        <p><strong>Last Name:</strong> {formData.lastName}</p>
-        <p><strong>Mobile No.:</strong> {formData.mobile}</p>
-        <p><strong>Emergency Contact No.:</strong> {formData.emergencyContact}</p>
-        <p><strong>Email ID:</strong> {formData.email}</p>
-        <p><strong>Marital Status:</strong> {formData.maritalStatus}</p>
-        <p><strong>Gender:</strong> {formData.gender}</p>
-        <p><strong>Date of Birth:</strong> {formData.dateOfBirth ? formData.dateOfBirth.toLocaleDateString() : ''}</p>
-      </div>
+          <h3>Address Data</h3>
+          {data.addressData.map((item) => (
+            <div key={item._id}>
+              <p>Native Country: {item.nativeCountry}</p>
+              <p>Native State: {item.nativeState}</p>
+              <p>Native City: {item.nativeCity}</p>
+              <p>Postal Code: {item.postalCode}</p>
+              <p>Passport No: {item.passportNo}</p>
+              <p>Passport Expiry: {new Date(item.passportExpiry).toLocaleDateString()}</p>
+            </div>
+          ))}
 
-      <div className="preview-group">
-        <h3>Educational Background</h3>
-        {formData.educationalBackground.map((qual, index) => (
-          <div key={index}>
-            <p><strong>Qualification:</strong> {qual.qualification}</p>
-            <p><strong>Institution:</strong> {qual.institution}</p>
-            <p><strong>Percentage:</strong> {qual.percentage}</p>
-            <p><strong>Passing Year:</strong> {qual.passingYear}</p>
-            <p><strong>Country:</strong> {qual.country}</p>
-            <hr />
-          </div>
-        ))}
-      </div>
+          <h3>Education Data</h3>
+          {data.educationData.map((item) => (
+            <div key={item._id}>
+              <p>Interested Country: {item.interestedCountry}</p>
+              <p>English Proficiency Test: {item.englishProficiencyTest}</p>
+              <p>Test Score: {item.testScore}</p>
+              <p>Additional Education Board: {item.additionalEducationBoard}</p>
+            </div>
+          ))}
 
-      <div className="preview-group">
-        <h3>Address Information</h3>
-        <p><strong>Native Country:</strong> {formData.nativeCountry}</p>
-        <p><strong>Native State:</strong> {formData.nativeState}</p>
-        <p><strong>Native City:</strong> {formData.nativeCity}</p>
-        <p><strong>Postal Code:</strong> {formData.postalCode}</p>
-        <p><strong>Passport No.:</strong> {formData.passportNo}</p>
-        <p><strong>Passport Expiry:</strong> {formData.passportExpiry ? formData.passportExpiry.toLocaleDateString() : ''}</p>
-      </div>
+          <h3>Visa Status Data</h3>
+          {data.visaStatusData.map((item) => (
+            <div key={item._id}>
+              <p>Visa Rejection Status: {item.visaRejectionStatus}</p>
+              <p>Gap in Education: {item.gapInEducation}</p>
+            </div>
+          ))}
 
-      <div className="preview-group">
-        <h3>Background Information</h3>
-        <p><strong>Visa Rejection Status:</strong> {formData.visaRejectionStatus ? 'Yes' : 'No'}</p>
-        <p><strong>Gap in Education:</strong> {formData.gapInEducation}</p>
-      </div>
-
-      <div className="preview-group">
-        <h3>Uploaded Documents</h3>
-        {uploadedDocuments.length > 0 ? (
-          uploadedDocuments.map((doc, index) => (
-            <p key={index}><strong>{doc.name}</strong>: <a href={URL.createObjectURL(doc)} target="_blank" rel="noopener noreferrer">View Document</a></p>
-          ))
-        ) : (
-          <p>No documents uploaded.</p>
-        )}
-      </div>
-
-      <div className="preview-actions">
-        <button onClick={() => {/* Implement logic to go back to the form */}}>Edit Form</button>
-        <button onClick={() => {/* Implement final submission logic */}}>Submit</button>
-      </div>
-    </section>
+          <h3>Uploaded Data</h3>
+          {data.uploadData.map((item) => (
+            <div key={item._id}>
+              <p>Upload ID: {item._id}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
-export default Preview;
+export default DataPreview;

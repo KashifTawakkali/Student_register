@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import { submitPersonalData } from '../API/contorller/personalController';
@@ -23,8 +23,26 @@ const PersonalInformation = ({ formData, setFormData, errors, setErrors, setLoad
     { value: 'Other', label: 'Other' },
   ];
 
+  
+
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('studentEmailId');
+    if (savedEmail) {
+      setFormData((prevData) => ({
+        ...prevData,
+        studentEmailId: savedEmail,
+      }));
+    }
+  }, []);
+
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
+
+
+    if (field === 'studentEmailId') {
+      localStorage.setItem('studentEmailId', value);
+    }
   };
 
   const validateForm = () => {
@@ -66,6 +84,9 @@ const PersonalInformation = ({ formData, setFormData, errors, setErrors, setLoad
       }
     }
   };
+
+
+  
 
   return (
     <section className="form-section">
@@ -133,15 +154,16 @@ const PersonalInformation = ({ formData, setFormData, errors, setErrors, setLoad
       </div>
 
       <div className="form-group">
-        <label>Student Email ID *</label>
-        <input 
-          type="email" 
-          placeholder="Email" 
-          required 
-          onChange={(e) => handleInputChange('studentEmailId', e.target.value)} 
-        />
-        {errors.studentEmailId && <div className="error-message">{errors.studentEmailId}</div>}
-      </div>
+      <label>Student Email ID *</label>
+      <input 
+        type="email" 
+        placeholder="Email" 
+        required 
+        value={formData.studentEmailId} 
+        onChange={(e) => handleInputChange('studentEmailId', e.target.value)} 
+      />
+      {errors.studentEmailId && <div className="error-message">{errors.studentEmailId}</div>}
+    </div>
 
       <div className="form-group">
         <label>Marital Status *</label>
